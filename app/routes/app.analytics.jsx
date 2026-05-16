@@ -1,6 +1,12 @@
-import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import { Page, Card, Text, BlockStack, DataTable } from "@shopify/polaris";
+import { data } from "react-router";
+import { useLoaderData } from "react-router";
+import {
+  Page,
+  Card,
+  Text,
+  BlockStack,
+  DataTable,
+} from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 
 export async function loader({ request }) {
@@ -38,13 +44,16 @@ export async function loader({ request }) {
     });
   });
 
-  // Sort by likes descending
+  // Sort by likes (highest first)
   articles.sort((a, b) => b.likes - a.likes);
 
   const totalBlogs = articles.length;
-  const totalLikes = articles.reduce((sum, article) => sum + article.likes, 0);
+  const totalLikes = articles.reduce(
+    (sum, article) => sum + article.likes,
+    0
+  );
 
-  return json({
+  return data({
     totalBlogs,
     totalLikes,
     articles,
