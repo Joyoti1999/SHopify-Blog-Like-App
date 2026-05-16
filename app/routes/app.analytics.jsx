@@ -1,101 +1,30 @@
-import { data } from "react-router";
-import { useLoaderData } from "react-router";
-import {
-  Page,
-  Card,
-  Text,
-  BlockStack,
-  DataTable,
-} from "@shopify/polaris";
+import { data, useLoaderData } from "react-router";
+import { Page, Card, Text } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 
 export async function loader({ request }) {
-  const { admin } = await authenticate.admin(request);
-
-  const response = await admin.graphql(`
-    query {
-      blogs(first: 20) {
-        nodes {
-          title
-          articles(first: 100) {
-            nodes {
-              id
-              title
-              metafield(namespace: "custom", key: "likes_count") {
-                value
-              }
-            }
-          }
-        }
-      }
-    }
-  `);
-
-  const result = await response.json();
-
-  const articles = [];
-
-  result.data.blogs.nodes.forEach((blog) => {
-    blog.articles.nodes.forEach((article) => {
-      articles.push({
-        title: article.title,
-        likes: parseInt(article.metafield?.value || "0", 10),
-      });
-    });
-  });
-
-  // Sort by likes (highest first)
-  articles.sort((a, b) => b.likes - a.likes);
-
-  const totalBlogs = articles.length;
-  const totalLikes = articles.reduce(
-    (sum, article) => sum + article.likes,
-    0
-  );
+  await authenticate.admin(request);
 
   return data({
-    totalBlogs,
-    totalLikes,
-    articles,
+    totalBlogs: 0,
+    totalLikes: 0,
   });
 }
 
 export default function AnalyticsPage() {
-  const { totalBlogs, totalLikes, articles } = useLoaderData();
-
-  const rows = articles.map((article, index) => [
-    index + 1,
-    article.title,
-    article.likes,
-  ]);
+  const { totalBlogs, totalLikes } = useLoaderData();
 
   return (
     <Page title="Blog Analytics">
-      <BlockStack gap="500">
-        <Card>
-          <BlockStack gap="200">
-            <Text as="h2" variant="headingMd">
-              Summary
-            </Text>
-            <Text as="p">Total Blog Posts: {totalBlogs}</Text>
-            <Text as="p">Total Likes: {totalLikes}</Text>
-          </BlockStack>
-        </Card>
-
-        <Card>
-          <BlockStack gap="200">
-            <Text as="h2" variant="headingMd">
-              Blog Like Counts
-            </Text>
-
-            <DataTable
-              columnContentTypes={["numeric", "text", "numeric"]}
-              headings={["#", "Blog Title", "Likes"]}
-              rows={rows}
-            />
-          </BlockStack>
-        </Card>
-      </BlockStack>
+      <Card>
+        <div style={{ padding: "20px" }}>
+          <Text as="h2" variant="headingMd">
+            Summary
+          </Text>
+          <p>Total Blog Posts: {totalBlogs}</p>
+          <p>Total Likes: {totalLikes}</p>
+        </div>
+      </Card>
     </Page>
   );
 }
