@@ -17,3 +17,8 @@ redirect_urls = [
 
 [build]
 automatically_update_urls_on_dev = true
+
+[app_proxy]
+url = "/api/like"
+subpath = "blog-like"
+prefix = "apps"
