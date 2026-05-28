@@ -1,0 +1,20 @@
+client_id = "bb88cfb83c7db0ea8c85311a8d43bc68"
+name = "new-app-blog"
+application_url = "https://s-hopify-blog-like-app-okzu.vercel.app"
+embedded = true
+
+[webhooks]
+api_version = "2026-07"
+
+[access_scopes]
+scopes = "read_content,write_content,write_metaobject_definitions,write_metaobjects,write_products"
+
+[auth]
+redirect_urls = [
+"https://s-hopify-blog-like-app-okzu.vercel.app/api/auth",
+"https://s-hopify-blog-like-app-okzu.vercel.app/auth/callback"
+]
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = true
